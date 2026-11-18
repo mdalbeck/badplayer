@@ -14,7 +14,7 @@ import { $, esc, toast, modal, closeModal } from './ui.js';
 
 export const FORMAT = 'badplayer-share';
 export const KINDS = ['task', 'clips', 'done', 'diary'];
-// Adresse, unter der BadPlayer gerade läuft (online: badplayer.mpdalbeck.workers.dev)
+// Adresse, unter der BadPlayer gerade läuft (online: badmplayer.mpdalbeck.workers.dev)
 export const APP_URL = location.origin + location.pathname;
 
 // ---------- Ein-/Auspacken (deflate + base64url), wie in BadPlan ----------

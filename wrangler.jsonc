@@ -1,7 +1,7 @@
 // Cloudflare Workers: BadPlayer ist eine reine statische Seite (kein Server-Code).
 // Jeder Push auf main wird von Cloudflare mit `npx wrangler deploy` veröffentlicht.
 {
-  "name": "badplayer",
+  "name": "badmplayer",
   "compatibility_date": "2026-11-01",
   "assets": {
     "directory": "."
