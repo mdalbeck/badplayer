@@ -4,7 +4,7 @@ import * as St from './store.js';
 import { icon, face } from './icons.js';
 import { t, fmtDay, fmtDateTime } from './i18n.js';
 import { $, $$, esc, toast, modal, closeModal } from './ui.js';
-import { makePkg, sharePkg, readLink } from './share.js';
+import { makePkg, sharePkg, readLink, unpack } from './share.js';
 import { kindLabel, thumb } from './video.js';
 import { entryList } from './diary.js';
 
@@ -61,8 +61,9 @@ const shareSent = (pkg) => sharePkg(pkg, pkg.kind === 'task'
   : { title: t('co.newClips'), hint: t('co.shareHint'), text: t('co.msgClips', { n: pkg.clips.length }) });
 
 // ================= Aufgabe / Clips zusammenstellen =================
-export function coachFormView(el, kind, fromId) {
-  const tpl = fromId ? St.sentItem(fromId)?.pkg : null;
+/** draft: vorausgefüllter Entwurf aus BadPlan/BadClip (#/compose/…) { kind, title, text, clips, skipped, source } */
+export function coachFormView(el, kind, fromId, draft = null) {
+  const tpl = draft || (fromId ? St.sentItem(fromId)?.pkg : null);
   let mode = kind === 'clips' ? 'clips' : 'task';
   const f = { from: St.S.meta.coachName, title: tpl?.title || '', text: tpl?.text || '', due: '', to: '', clips: tpl?.clips?.length ? tpl.clips.map((c) => ({ ...c })) : [{ url: '', title: '', note: '' }] };
   let sent = false;
@@ -83,6 +84,7 @@ export function coachFormView(el, kind, fromId) {
     el.innerHTML = `
       <div class="pagehead"><a class="back" href="#/coach">${icon('back', 16)} ${esc(t('co.title'))}</a>
         <h1>${esc(t(mode === 'task' ? 'co.newTask' : 'co.newClips'))}</h1></div>
+      ${draft ? `<p class="note">${icon('download', 16)}<span>${esc(t('co.fromApp', { app: draft.source || 'Bad Apps' }))}${draft.skipped ? ` ${esc(t(draft.skipped === 1 ? 'co.skipped1' : 'co.skipped', { n: draft.skipped }))}` : ''}</span></p>` : ''}
       <div class="seg wide" id="cf-mode"><button type="button" data-m="task" class="${mode === 'task' ? 'on' : ''}">${icon('clipboard', 16)}${esc(t('co.modeTask'))}</button><button type="button" data-m="clips" class="${mode === 'clips' ? 'on' : ''}">${icon('library', 16)}${esc(t('co.modeClips'))}</button></div>
       <form class="panel" id="cf-form">
         <div class="row2">
@@ -246,4 +248,33 @@ export function importView(el, code) {
     }
   })();
   return {};
+}
+
+// ================= Entwurf aus BadPlan / BadClip öffnen (#/compose/…) =================
+// Format: { format: 'badplayer-draft', v: 1, kind: 'task' | 'clips', source, title, text, clips: [{ url, title, note }], skipped }
+export function composeView(el, code) {
+  let inner = null;
+  el.innerHTML = `<p class="muted">${esc(t('im.reading'))}</p>`;
+  (async () => {
+    let d;
+    try { d = await unpack(code); if (d?.format !== 'badplayer-draft') throw new Error('format'); } catch (e) {
+      console.warn(e);
+      el.innerHTML = `<div class="emptybig">${icon('alert', 44)}<h2>${esc(t('im.bad'))}</h2><p><a class="btn" href="#/coach">${esc(t('co.title'))}</a></p></div>`;
+      return;
+    }
+    const s = St.str;
+    const draft = {
+      kind: d.kind === 'clips' ? 'clips' : 'task', source: s(d.source, 40), title: s(d.title, 200), text: s(d.text),
+      clips: (Array.isArray(d.clips) ? d.clips : []).map(St.cleanClip).filter((c) => c.url).slice(0, 30), skipped: Math.max(0, +d.skipped || 0),
+    };
+    if (!St.S.meta.coach) St.setMeta({ coach: true });
+    // Adresse aufräumen: der Entwurf soll nicht beim Neuladen erneut geöffnet werden
+    history.replaceState(null, '', '#/coach/new/' + draft.kind);
+    inner = coachFormView(el, draft.kind, null, draft);
+  })();
+  return {
+    submit: () => inner?.submit?.(),
+    isDirty: () => inner?.isDirty?.() || false,
+    canLeave: () => (inner?.canLeave ? inner.canLeave() : true),
+  };
 }

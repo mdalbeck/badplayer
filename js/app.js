@@ -4,7 +4,7 @@ import { t, lang, setLang, fmtDateTime } from './i18n.js';
 import { $, $$, esc, toast, modal, closeModal, dlg } from './ui.js';
 import { diaryView, entryFormView } from './diary.js';
 import { tasksView, taskView, clipsView, clipView } from './tasks.js';
-import { coachView, coachFormView, reportView, importView } from './coach.js';
+import { coachView, coachFormView, reportView, importView, composeView } from './coach.js';
 import { startTour, isTourOpen } from './tour.js';
 import { mountSwitcher, hideBoot } from './family.js';
 
@@ -185,6 +185,7 @@ function route() {
   else if (a === 'report') { view = reportView(el, b); nav = 'coach'; }
   else if (a === 'me') { view = meView(el); nav = 'me'; }
   else if (a === 'import') { view = importView(el, parts[2] || ''); nav = ''; }
+  else if (a === 'compose') { view = composeView(el, parts[2] || ''); nav = 'coach'; }
   else view = diaryView(el);
   markNav(nav);
 }
@@ -196,7 +197,11 @@ function backupDue() {
   if (!St.isDirty() || now < (m.nagUntil || 0)) return false;
   return m.lastExport ? now - m.lastExport > 30 * DAY : now - m.created > 14 * DAY;
 }
+let navCoach = null;
 function updateChrome() {
+  // Trainer-Bereich wurde ein-/ausgeschaltet (z. B. durch einen Entwurf aus BadPlan): Navigation neu
+  if (navCoach !== null && navCoach !== !!St.S.meta.coach) { renderNav(); markNav(location.hash.startsWith('#/coach') || location.hash.startsWith('#/compose') ? 'coach' : ''); }
+  navCoach = !!St.S.meta.coach;
   updateDots();
   const b = $('#banner');
   let html = '';
@@ -232,7 +237,7 @@ document.addEventListener('visibilitychange', () => { if (document.visibilitySta
   updateChrome();
   // Beim allerersten Besuch einmal von selbst starten – nicht, wenn gerade ein Link geöffnet wird oder schon Daten da sind
   if (!St.S.meta.tourDone) {
-    if (St.hasData() || location.hash.startsWith('#/import/')) St.setMeta({ tourDone: true });
+    if (St.hasData() || /^#\/(import|compose)\//.test(location.hash)) St.setMeta({ tourDone: true });
     else setTimeout(() => { if (!St.S.meta.tourDone && !dlg().open) runTour(); }, 700);
   }
   if ('serviceWorker' in navigator && location.protocol.startsWith('http')) {

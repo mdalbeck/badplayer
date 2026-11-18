@@ -25,7 +25,7 @@ export function parseVideo(url) {
     if (u.pathname === '/watch') id = u.searchParams.get('v');
     else { const m = u.pathname.match(/^\/(embed|shorts|live|v)\/([\w-]+)/); if (m) id = m[2]; }
   }
-  if (id && /^[\w-]{6,20}$/.test(id)) return { type: 'yt', id, start: parseT(u.searchParams.get('t') || u.searchParams.get('start')), url: u.href };
+  if (id && /^[\w-]{6,20}$/.test(id)) return { type: 'yt', id, start: parseT(u.searchParams.get('t') || u.searchParams.get('start')), end: parseT(u.searchParams.get('end')), url: u.href };
   if (h === 'dropbox.com' || h.endsWith('.dropbox.com')) {
     u.searchParams.delete('dl');
     u.searchParams.set('raw', '1');
@@ -49,7 +49,7 @@ export function player(url) {
   const v = parseVideo(url);
   if (!v) return '';
   if (v.type === 'yt') {
-    return `<div class="vid"><iframe src="https://www.youtube-nocookie.com/embed/${v.id}?rel=0&playsinline=1${v.start ? `&start=${v.start}` : ''}"
+    return `<div class="vid"><iframe src="https://www.youtube-nocookie.com/embed/${v.id}?rel=0&playsinline=1${v.start ? `&start=${v.start}` : ''}${v.end > v.start ? `&end=${v.end}` : ''}"
       title="YouTube" allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowfullscreen loading="lazy"></iframe></div>`;
   }
   if (v.type === 'file') return `<div class="vid"><video src="${esc(v.src)}" controls playsinline preload="metadata"></video></div>`;

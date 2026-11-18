@@ -189,6 +189,9 @@ const DE = {
   'co.again': 'Nochmal schicken',
   'co.template': 'Als Vorlage für eine neue',
   'co.sentDeleted': 'Aus der Liste entfernt',
+  'co.fromApp': 'Aus {app} übernommen. Prüf alles kurz und tippe dann auf „Link erstellen“.',
+  'co.skipped': '{n} eigene Videos aus deiner Dropbox wurden weggelassen. Du kannst sie in Dropbox freigeben („Link kopieren“) und hier als Clip einfügen.',
+  'co.skipped1': '1 eigenes Video aus deiner Dropbox wurde weggelassen. Du kannst es in Dropbox freigeben („Link kopieren“) und hier als Clip einfügen.',
 
   // Rückmeldung
   'rp.titleDone': 'Aufgabe erledigt',
@@ -486,6 +489,9 @@ const EN = {
   'co.again': 'Send again',
   'co.template': 'Use as a template',
   'co.sentDeleted': 'Removed from the list',
+  'co.fromApp': 'Taken over from {app}. Check everything, then tap “Create link”.',
+  'co.skipped': '{n} own videos from your Dropbox were left out. Share them in Dropbox (“Copy link”) and add them here as a clip.',
+  'co.skipped1': '1 own video from your Dropbox was left out. Share it in Dropbox (“Copy link”) and add it here as a clip.',
 
   'rp.titleDone': 'Task done',
   'rp.titleDiary': 'Diary of {name}',
