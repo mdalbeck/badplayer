@@ -1,6 +1,6 @@
 # BadPlayer – diary, tasks and clips for players
 
-**Online:** https://badmplayer.mpdalbeck.workers.dev/
+**Online:** https://badplayer.mpdalbeck.workers.dev/
 
 Part of the “Bad Apps” family, next to [BadClip](https://badclip.mpdalbeck.workers.dev/) (video library), [BadPlan](https://badplan.mpdalbeck.workers.dev/) (training plans) and [BadTeam](https://badteam.mpdalbeck.workers.dev/) (players, groups, attendance – for coaches).
 BadPlayer is the app for **players**: made for the phone, simple enough for children, German/English, light/dark, accent pink `#ff4fd8`.
